@@ -1,6 +1,4 @@
-import random
 from datetime import datetime
-from random import randint
 
 class Usuarios:
     def __init__(self, cuenta, nombre):
@@ -36,39 +34,29 @@ class Medicos(Usuarios):
 
 
 class Citas:
-    def __init__(self, paciente, fecha,hora,medico):
+    def __init__(self, paciente, fecha_hora, medico):
         # super().__init__(paciente,medico)
         # se está llamando al constructor __init__ de la clase Persona y pasándole los parámetros nombre e id.con el comando super() .
         self.paciente = paciente
-        self.fecha = fecha
-        self.hora = hora
         self.medico = medico
-
-    def mostrarMensaje(self):
-        print(f"La fecha de la cita del paciente:{self.paciente} con el medico {self.medico} es el  {self.dia}{self.mes}{self.año} a las {self.hora} \n ")
+        self.fecha_hora = fecha_hora
 
     @staticmethod
-    def validar_fecha(fecha):
+    def validar_fechahora(fecha_hora):
         try:
-            datetime.strptime(fecha, "%d/%m/%Y")
+            datetime.strptime(fecha_hora, "%d/%m/%Y %H:%M")
             return True
         except ValueError:
             return False
 
+    def mostrarMensaje(self):
+        fecha_hora_obj = datetime.strptime(self.fecha_hora, "%d/%m/%Y %H:%M")
+        print(f"Cita registrada para {self.paciente.nombre} con el médico {self.medico.nombre} el {fecha_hora_obj.strftime('%d/%m/%Y')} a las {fecha_hora_obj.strftime('%H:%M')} \n ")
+
+    def mostrarInfo(self):
+        print(f"Cita agendada para {self.paciente.nombre} con {self.medico.nombre}")
 
 class Tratamiento:
-    tratamientos_sintomas = {
-        "Tos": ("Antibióticos", "8hrs"),
-        "Fiebre": ("Antibióticos", "8hrs"),
-        "Gripe": ("Antibióticos", "8hrs"),
-        "Hipertension": ("Dieta", "al menos 1 mes"),
-        "Diabetes": ("Dieta", "al menos 1 mes"),
-        "Obesidad": ("Dieta", "al menos 1 mes"),
-        "Arritmia": ("Medicamento especializado", "según indicación médica"),
-        "Insuficiencia cardiaca": ("Medicamento especializado", "según indicación médica"),
-        "Tiroides": ("Medicamento especializado", "según indicación médica")
-    }
-
     def __init__(self, paciente, prescripcion, duracion, medico):
         self.paciente = paciente
         self.prescripcion = prescripcion
@@ -76,11 +64,11 @@ class Tratamiento:
         self.medico = medico
 
     def mostrarMensaje(self):
-        print(f"El tratamiento dado por {self.medico.nombre} para el paciente {self.paciente.nombre} es de {self.prescripcion} cada  {self.duracion} \n")
+        print(f"El tratamiento dado por {self.medico.nombre} de la especialidad {self.medico.especialidad} para el paciente {self.paciente.nombre} es de {self.prescripcion} cada {self.duracion} ")
 
 
 def main():
-    citas_agendadas = []
+    citas_agendadas = {}
     pacientes = {}
 
     especialidades_medicas = {
@@ -96,13 +84,12 @@ def main():
     #medico4 = Medicos("Javier Hernandez", 432764, "Neumología")
     medico4 = Medicos("Ximena Diaz", 890203, "Pediatría")
 
-    medicos = { "MD1": medico1, "MD2": medico2, "MD3": medico3, "MD4": medico4}
+    #medicos = {"MD1":medico1, "MD2":medico2, "MD3":medico3, "MD4":medico4}
 
     print("Bienvenidx!")
 
     while True:
         opt = input("\nSelecciona una opción:\n1. Consultas\n2. Agendar cita\n3. Medico\n4. Tratamientos\n5. Salir\n")
-
         if opt == "1":
             # Se ingresan los datos del paciente
             nombre = input("Nombre: ")
@@ -126,57 +113,104 @@ def main():
 
             # Se crean los objetos Pacientes
             paciente = Pacientes(nombre, id_paciente, edad, sintomas)
-            '''
+
             if edad <= 12:
                 tratamiento = Tratamiento(paciente, "Antibioticos infantiles", "8hrs", medico4)
-                paciente.tratamientos.append(tratamiento)
-                tratamiento.mostrarMensaje()
-            else:
-                continue
-            '''
-            if especialidades_encontradas == ['Interna']:
-                tratamiento1 = Tratamiento(paciente, "Antibióticos", "8hrs", medico1)
-                paciente.tratamientos.append(tratamiento1)
-                tratamiento1.mostrarMensaje()
-
-            elif especialidades_encontradas == ['Cardiologia']:
-                tratamiento = Tratamiento(paciente, "Dieta y vida saludable", "al menos 1 mes", medico2)
-                paciente.tratamientos.append(tratamiento)
-                tratamiento.mostrarMensaje()
-
-            elif especialidades_encontradas == ['Endocrinologia']:
-                tratamiento = Tratamiento(paciente, "Dieta", "al menos 1 mes", medico3)
-                paciente.tratamientos.append(tratamiento)
-                tratamiento.mostrarMensaje()
 
             else:
-                print("No tenemos la especialidad para curar su enfermedad")
+                if especialidades_encontradas == ['Interna']:
+                    tratamiento = Tratamiento(paciente, "Antibióticos", "8hrs", medico1)
+
+                elif especialidades_encontradas == ['Cardiologia']:
+                    tratamiento = Tratamiento(paciente, "Dieta y vida saludable", "mes", medico2)
+
+                elif especialidades_encontradas == ['Endocrinologia']:
+                    tratamiento = Tratamiento(paciente, "Dieta", "mes", medico3)
+
+                elif edad <= 12:
+                    tratamiento = Tratamiento(paciente, "Antibiotico infantil", "8hrs", medico4)
+
+                else:
+                    print("No tenemos la especialidad para curar su enfermedad")
+            paciente.tratamientos.append(tratamiento)
+            tratamiento.mostrarMensaje()
 
             pacientes[id_paciente] = {
                 "nombre": nombre,
                 "edad": edad,
                 "sintomas": sintomas,
-                "tratamiento": tratamiento1
+                "tratamiento": tratamiento
             }
 
         elif opt == "2":
+            nombre = input("Nombre: ")
+            edad = int(input("Edad: "))
+            sintomas = input("Sintomas separadas por comas (ejemplo: Gripe, Fiebre): ").split(", ")
+            id_paciente = input("Número de Seguridad Social: ")
+            fecha_hora = input("Ingrese la fecha (dd/mm/yyyy HH:MM): ")
+
+            area =  input("A que area se cita:\nInterno\nCardiología\nEndocrinologia\nPediatria\n")
+
+            paciente = Pacientes(nombre, id_paciente, edad, sintomas)
+
+            # Verificar si el ID ya existe en el diccionario de pacientes
+            if id_paciente in citas_agendadas:
+                print("El ID de paciente ya existe. Intente nuevamente.")
+                continue
+
             # Se genera la cita
-            cita = Citas(paciente.nombre, "03", "10", "2023", "10:00", medico1.nombre)
+            if area == "Interno":
+                cita = Citas(paciente, fecha_hora, medico1)
 
-            citas_agendadas.append(cita)
+            elif area == "Cardiologia":
+                cita = Citas(paciente, fecha_hora, medico2)
 
-            cita.mostrarMensaje()
+            elif area == "Endocrinologia":
+                cita = Citas(paciente, fecha_hora, medico3)
+
+            elif area == "Pediatria":
+                cita = Citas(paciente, fecha_hora, medico4)
+
+            else:
+                print("No contamos con esa especialidad")
+
+            f_h = fecha_hora
+            if Citas.validar_fechahora(f_h):
+                if f_h not in citas_agendadas:
+                    citas_agendadas[f_h] = cita  # Agregamos la cita al diccionario
+                    cita.mostrarMensaje()  # Mostramos un mensaje de confirmación
+                else:
+                    print("La hora no está disponible")
+            else:
+                print("Formato de fecha y hora incorrecto. Use dd/mm/yyyy HH:MM.")
+
+
 
         elif opt == "3":
-            if citas_agendadas:
+            # Ordenar las citas por fecha y hora de menor a mayor
+            citas_agendadas_ordenadas = sorted(citas_agendadas.items(), key=lambda x: x[0])
+
+            if citas_agendadas_ordenadas:
                 print("Citas agendadas:")
-                for i, cita in enumerate(citas_agendadas, 1):
-                    print(f"{i}. {cita}")
-                    print("Tratamientos:")
-                    for t in paciente.tratamientos:
-                        t.mostrar_info()
+                for i, (fecha_hora, _) in enumerate(citas_agendadas_ordenadas, 1):
+                    print(f"{i}. {fecha_hora}")
             else:
                 print("No hay citas agendadas.")
+
+            # Elegir cita
+            cita_elegida = input("Ingrese que cita desea conocer: ")
+            if cita_elegida == "0":
+                continue  # Volver al menú principal
+
+            try:
+                cita_elegida = int(cita_elegida)
+                if 1 <= cita_elegida <= len(citas_agendadas_ordenadas):
+                    fecha_hora, cita = citas_agendadas_ordenadas[cita_elegida - 1]
+                    cita.mostrarMensaje()  # Mostrar la información de la cita seleccionada
+                else:
+                    print("Número de cita no válido.")
+            except ValueError:
+                print("Entrada no válida. Ingrese un número válido.")
 
         elif opt == "4":
             # Mostrar lista de pacientes y obtener tratamiento
@@ -191,8 +225,7 @@ def main():
                 continue  # Volver al menú principal
 
             if id_elegido in pacientes:
-                Tratamiento.mostrarMensaje()
-
+                tratamiento.mostrarMensaje()
             else:
                 print("ID de paciente no válido. Intente nuevamente.")
 
@@ -201,6 +234,7 @@ def main():
 
         else:
             print("Opcion no valida, intente de nuevo\n")
+
 
 
 if __name__ == "__main__":
