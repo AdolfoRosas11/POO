@@ -1,6 +1,6 @@
 import random
 class Personaje:
-    def __init__(self,avatar,salud,fuerza,agilidad,inteligencia,nombre) :
+    def __init__(self, avatar, salud, fuerza, agilidad, inteligencia, nombre) :
         # Se declaran los atributos de cada personaje
         self.avatar=avatar
         self.salud=salud
@@ -21,17 +21,17 @@ class Personaje:
         #Se crea una función para imprimir la la habilidad selecionada
         self.habilidad.eleccion()
 
-    def enfretar(self,oponente,mundo):
+    def enfrentar(self, oponente, mundo):
         print(f"¡{self.nombre} se enfrenta a {oponente.nombre}!")
         # Simular ataque del personaje1 al personaje2
         danio = self.daño_inflingido()
         print(f"{self.nombre} ataca a {oponente.nombre} y le inflige {danio} de daño.")
-        oponente.daño_recivido(danio)
+        oponente.daño_recibido(danio)
 
         # Simular ataque del personaje2 al personaje1
         danio = oponente.daño_inflingido()
         print(f"{oponente.nombre} ataca a {self.nombre} y le inflige {danio} de daño.")
-        self.daño_recivido(danio)
+        self.daño_recibido(danio)
 
         # Mostrar el estado después del enfrentamiento
         print(f"Estado después del enfrentamiento:")
@@ -61,7 +61,7 @@ class Personaje:
         print(f"Avatar : {personaje .avatar}")
 
         personaje.mostrar_atributos()
-        personaje.mostrar_habilidades()
+        #personaje.mostrar_habilidades()
 
 class Habilidad:
     def __init__(self,nombre):
@@ -119,6 +119,7 @@ class Arqueros(Personaje):
         # Mostrar el estado después del enfrentamiento
         print(f"Estado después del enfrentamiento:")
         mundo.mostrar_estado_personajes()
+
 class Magos(Personaje):
     def __init__(self, nombre,avatar):
         # self.nombre= nombre
@@ -144,15 +145,21 @@ class Magos(Personaje):
 
 
 def elegir_avatar():
-    avatares = ["Guerrero", "Mago", "Arquero"]
+    avatares = ["Guerrero", "Mago", "Arquero", "Info de los avatares:"]
     print("Elige el avatar de tu personaje:")
 
     for i, a in enumerate(avatares):
-        print(f"{i + 1}. {a}")
+        print(f"{i + 1}. {a}", end="   ")
 
-    avatar = int(input("> "))
+    avatar = int(input("\n> "))
+
+    if avatar == 4:
+        print("""Guerrero -> HP: 200    Fuerza: 10      Agilidad: 5      Inteligencia: 4\n
+Mago -> HP: 100    Fuerza: 4      Agilidad: 6      Inteligencia: 12\n
+Guerrero -> HP: 150    Fuerza: 6      Agilidad: 10    Inteligencia: 6\n""")
+        print("Elige el avatar de tu personaje:")
+        avatar = int(input("> "))
     return avatares[avatar - 1]
-
 
 def elegir_habilidad():
     habilidades = ["Fuerza", "Magia", "Precisión"]
@@ -166,18 +173,15 @@ def elegir_habilidad():
     return habilidades[habilidad - 1]
 
 
-def crear_personaje():
-    print("Creación de personaje")
-    nombre = input("Ingresa el nombre: ")
-    avatar = elegir_avatar()
-    habilidad = elegir_habilidad()
-
+def crear_personaje(nombre, avatar, habilidades):
     if avatar == "Guerrero":
-        personaje = Guerrero(nombre, avatar)
+        personaje = Guerreros(nombre, avatar)
+
     elif avatar == "Mago":
-        personaje = Mago(nombre, avatar)
-    else:
-        personaje = Arquero(nombre, avatar)
+        personaje = Magos(nombre, avatar)
+
+    elif avatar == "Arquero":
+        personaje = Arqueros(nombre, avatar)
 
     return personaje
 
@@ -212,18 +216,6 @@ class MundoDelJuego:
         print(f"Estado después del enfrentamiento:")
         self.mostrar_estado_personajes()
 
-
-    def desafio(self):
-        if len(self.personajes) < 2:
-            print("No hay suficientes personajes para un desafío.")
-            return
-
-        # Elegir dos personajes aleatorios para el desafío
-        personaje1, personaje2 = random.sample(self.personajes, 2)
-
-        print(f"Desafío entre {personaje1.nombre} y {personaje2.nombre}!")
-        self.enfrentamiento(personaje1, personaje2)
-
     def mostrar_estado_personajes(self):
         for personaje in self.personajes:
             print(f"{personaje.nombre}: Salud={personaje.salud}")
@@ -250,38 +242,44 @@ class MundoDelJuego:
 def main():
     print("Bienvenido al ring de Batalla!")
     mundo = MundoDelJuego()
-    num_personajes = int(input("Cuantos personajes deseas crear? "))
+    num_personajes = int(input("Ingrese el numero de jugadores: "))
 
     for i in range(num_personajes):
-        nombre = input("Ingresa el nombre: ")
-
+        nombre = input(f"Jugador {i+1} ingresa tu nombre: ")
         avatar = elegir_avatar()
         habilidad = elegir_habilidad()
 
         personaje = crear_personaje(nombre, avatar, habilidad)
 
-        mundo.agregar_personaje(personaje)
+        #personaje1 = crear_personaje(nombre, avatar, habilidad)
+        #personaje2 = crear_personaje()
+
+        mundo.agregar_personajes(personaje)
+        #mundo.agregar_personaje(personaje2)
+    mundo.saber_personajes()
+
+
 
     # Creación de Objetos y agregado al mundo
     #guerrero1 = Guerreros("Guerrero1", "Espada afilada")
     #arquero1 = Arqueros("Arquero1", "Arco elegante")
     #mago1 = Magos("Mago1", "Varita mágica")
 
-    mundo.agregar_personajes()
-    mundo.agregar_personajes()
-    mundo.agregar_personajes()
+    #mundo.agregar_personajes()
+    #mundo.agregar_personajes()
+    #mundo.agregar_personajes()
 
-    mundo.saber_personajes()
+    #mundo.saber_personajes()
 
     # Elegir dos personajes para el desafío
     #personaje1 = guerrero1  # Puedes cambiar esto para elegir otro personaje
     #personaje2 = arquero1  # Puedes cambiar esto para elegir otro personaje
 
     # Simular un desafío entre personaje1 y personaje2
-    mundo.enfrentamientos(personaje1, personaje2)
+    #mundo.enfrentamientos(personaje1, personaje2)
 
     # Mostrar estado de los personajes después del desafío
-    mundo.mostrar_estado_personajes()
+    #mundo.mostrar_estado_personajes()
 
 
 
