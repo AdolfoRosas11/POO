@@ -143,6 +143,45 @@ class Magos(Personaje):
         mundo.mostrar_estado_personajes()
 
 
+def elegir_avatar():
+    avatares = ["Guerrero", "Mago", "Arquero"]
+    print("Elige el avatar de tu personaje:")
+
+    for i, a in enumerate(avatares):
+        print(f"{i + 1}. {a}")
+
+    avatar = int(input("> "))
+    return avatares[avatar - 1]
+
+
+def elegir_habilidad():
+    habilidades = ["Fuerza", "Magia", "Precisión"]
+
+    print("Elige la habilidad de tu personaje:")
+
+    for i, h in enumerate(habilidades):
+        print(f"{i + 1}. {h}")
+
+    habilidad = int(input("> "))
+    return habilidades[habilidad - 1]
+
+
+def crear_personaje():
+    print("Creación de personaje")
+    nombre = input("Ingresa el nombre: ")
+    avatar = elegir_avatar()
+    habilidad = elegir_habilidad()
+
+    if avatar == "Guerrero":
+        personaje = Guerrero(nombre, avatar)
+    elif avatar == "Mago":
+        personaje = Mago(nombre, avatar)
+    else:
+        personaje = Arquero(nombre, avatar)
+
+    return personaje
+
+
 class MundoDelJuego:
     def __init__(self):
         self.personajes=[] # Para almacenar la lista de jugadores dentro del mundo
@@ -205,27 +244,38 @@ class MundoDelJuego:
         for personaje in self.personajes:
             print(f"{personaje.nombre}: Salud={personaje.salud}")
 
-# def desafios(self):
+
 
 
 def main():
     print("Bienvenido al ring de Batalla!")
     mundo = MundoDelJuego()
+    num_personajes = int(input("Cuantos personajes deseas crear? "))
+
+    for i in range(num_personajes):
+        nombre = input("Ingresa el nombre: ")
+
+        avatar = elegir_avatar()
+        habilidad = elegir_habilidad()
+
+        personaje = crear_personaje(nombre, avatar, habilidad)
+
+        mundo.agregar_personaje(personaje)
 
     # Creación de Objetos y agregado al mundo
-    guerrero1 = Guerreros("Guerrero1", "Espada afilada")
-    arquero1 = Arqueros("Arquero1", "Arco elegante")
-    mago1 = Magos("Mago1", "Varita mágica")
+    #guerrero1 = Guerreros("Guerrero1", "Espada afilada")
+    #arquero1 = Arqueros("Arquero1", "Arco elegante")
+    #mago1 = Magos("Mago1", "Varita mágica")
 
-    mundo.agregar_personajes(guerrero1)
-    mundo.agregar_personajes(arquero1)
-    mundo.agregar_personajes(mago1)
+    mundo.agregar_personajes()
+    mundo.agregar_personajes()
+    mundo.agregar_personajes()
 
     mundo.saber_personajes()
 
     # Elegir dos personajes para el desafío
-    personaje1 = guerrero1  # Puedes cambiar esto para elegir otro personaje
-    personaje2 = arquero1  # Puedes cambiar esto para elegir otro personaje
+    #personaje1 = guerrero1  # Puedes cambiar esto para elegir otro personaje
+    #personaje2 = arquero1  # Puedes cambiar esto para elegir otro personaje
 
     # Simular un desafío entre personaje1 y personaje2
     mundo.enfrentamientos(personaje1, personaje2)
